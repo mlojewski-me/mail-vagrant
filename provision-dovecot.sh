@@ -1,7 +1,6 @@
 #!/bin/bash
 set -eux
 
-config_domain=$(hostname --domain)
 config_fqdn=$(hostname --fqdn)
 
 apt-get install -y --no-install-recommends dovecot-imapd dovecot-sqlite sqlite3
@@ -46,7 +45,7 @@ service auth {
 }
 
 protocol lda {
-  postmaster_address = postmaster@$config_domain
+  postmaster_address = postmaster@config_fqdn
 }
 EOF
 
@@ -86,7 +85,7 @@ done </etc/postfix/virtual_mailbox_maps
 # add all the relay users from the /etc/postfix/controlled_envelope_senders.cdb file as users.
 # NB this translates the cdb lines that have a key that starts with @ and then splits its value
 #    into individual envelope sender address. a cdb line is something like:
-#     +12,44:@example.com->satellite@example.com,nullmailer@example.com
+#     +12,44:@mail.vagrant
 # NB all passwords are "password".
 for envelope_senders in `cdb -d /etc/postfix/controlled_envelope_senders.cdb | grep -E '^.+:@.+->' | sed -E 's,^.+->(.*),\1,g'`; do
   for envelope_sender in `echo "$envelope_senders" | tr , ' '`; do

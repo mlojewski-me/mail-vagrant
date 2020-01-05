@@ -2,10 +2,10 @@ you can also manually test the IMAP connection on the command line.
 
 the first line in this example is the command you type. the next lines are the server response.
 
-nc mail.@@config_domain@@ imap
+nc @@config_fqdn@@ imap
 * OK [CAPABILITY IMAP4rev1 LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE AUTH=PLAIN AUTH=LOGIN] Dovecot ready.
 
-a login alice@example.com password
+a login alice@mail.vagrant password
 a OK [CAPABILITY IMAP4rev1 LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE SORT SORT=DISPLAY THREAD=REFERENCES THREAD=REFS THREAD=ORDEREDSUBJECT MULTIAPPEND URL-PARTIAL CATENATE UNSELECT CHILDREN NAMESPACE UIDPLUS LIST-EXTENDED I18NLEVEL=1 CONDSTORE QRESYNC ESEARCH ESORT SEARCHRES WITHIN CONTEXT=SEARCH LIST-STATUS BINARY MOVE] Logged in
 
 a SELECT INBOX

@@ -1,10 +1,8 @@
 #!/bin/bash
 set -eux
 
-config_domain=$(hostname --domain)
+config_fqdn=$(hostname --fqdn)
 config_ip_address=$(hostname -I | awk '{print $2}')
-config_satellite_ip_address="${1:-192.168.33.253}"; shift || true
-config_nullmailer_ip_address="${1:-192.168.33.252}"; shift || true
 
 # update the package cache.
 apt-get update
@@ -20,11 +18,8 @@ systemctl stop systemd-resolved
 systemctl disable systemd-resolved
 cat >/etc/dnsmasq.d/local.conf <<EOF
 no-hosts
-mx-host=$config_domain,mail.$config_domain
-host-record=$config_domain,$config_ip_address
-host-record=mail.$config_domain,$config_ip_address
-host-record=satellite.$config_domain,$config_satellite_ip_address
-host-record=nullmailer.$config_domain,$config_nullmailer_ip_address
+mx-host=$config_fqdn
+host-record=$config_fqdn,$config_ip_address
 server=$default_dns_resolver
 EOF
 rm /etc/resolv.conf
@@ -33,6 +28,6 @@ echo 'dns-nameservers 127.0.0.1' >>/etc/network/interfaces
 systemctl restart dnsmasq
 
 # use it.
-dig $config_domain
-dig mx $config_domain
+dig $config_fqdn
+dig mx $config_fqdn
 dig -x $config_ip_address

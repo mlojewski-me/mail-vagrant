@@ -1,12 +1,12 @@
 #!/bin/bash
 set -eux
 
-domain=$1
-ca_file_name='example-ca'
-ca_common_name='Example CA'
+config_fqdn=$(hostname --fqdn)
+ca_file_name='root-ca'
+ca_common_name='Root CA'
 
-mkdir -p /vagrant/shared/tls/$ca_file_name
-cd /vagrant/shared/tls/$ca_file_name
+mkdir -p /vagrant/tls/pki
+cd /vagrant/tls/pki
 
 # create the CA certificate.
 if [ ! -f $ca_file_name-crt.pem ]; then
@@ -39,42 +39,42 @@ if [ ! -f $ca_file_name-crt.pem ]; then
 fi
 
 # trust the CA.
-if [ ! -f /usr/local/share/ca-certificates/example-ca.crt ]; then
-    cp example-ca-crt.pem /usr/local/share/ca-certificates/example-ca.crt
+if [ ! -f /usr/local/share/ca-certificates/$ca_file_name.crt ]; then
+    cp $ca_file_name-crt.pem /usr/local/share/ca-certificates/$ca_file_name.crt
     update-ca-certificates -v
 fi
 
-if [ "$domain" != '' ] && [ ! -f $domain-crt.pem ]; then
+if [ "$config_fqdn" != '' ] && [ ! -f $config_fqdn-crt.pem ]; then
     openssl genrsa \
-        -out $domain-key.pem \
+        -out $config_fqdn-key.pem \
         2048 \
         2>/dev/null
-    chmod 400 $domain-key.pem
+    chmod 400 $config_fqdn-key.pem
     openssl req -new \
         -sha256 \
-        -subj "/CN=$domain" \
-        -key $domain-key.pem \
-        -out $domain-csr.pem
+        -subj "/CN=$config_fqdn" \
+        -key $config_fqdn-key.pem \
+        -out $config_fqdn-csr.pem
     openssl x509 -req -sha256 \
         -CA $ca_file_name-crt.pem \
         -CAkey $ca_file_name-key.pem \
         -CAcreateserial \
         -extensions a \
         -extfile <(echo "[a]
-            subjectAltName=DNS:$domain
+            subjectAltName=DNS:$config_fqdn
             extendedKeyUsage=critical,serverAuth
             ") \
         -days 365 \
-        -in  $domain-csr.pem \
-        -out $domain-crt.pem
+        -in  $config_fqdn-csr.pem \
+        -out $config_fqdn-crt.pem
     openssl pkcs12 -export \
         -keyex \
-        -inkey $domain-key.pem \
-        -in $domain-crt.pem \
-        -certfile $domain-crt.pem \
+        -inkey $config_fqdn-key.pem \
+        -in $config_fqdn-crt.pem \
+        -certfile $config_fqdn-crt.pem \
         -passout pass: \
-        -out $domain-key.p12
+        -out $config_fqdn-key.p12
     # dump the certificate contents (for logging purposes).
-    #openssl x509 -noout -text -in $domain-crt.pem
-    #openssl pkcs12 -info -nodes -passin pass: -in $domain-key.p12
+    #openssl x509 -noout -text -in $config_fqdn-crt.pem
+    #openssl pkcs12 -info -nodes -passin pass: -in $config_fqdn-key.p12
 fi

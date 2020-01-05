@@ -1,9 +1,9 @@
 import imaplib
 
-user = 'alice@@@config_domain@@'
+user = 'alice@@@config_fqdn@@'
 password = 'password'
 
-server = imaplib.IMAP4('mail.@@config_domain@@')
+server = imaplib.IMAP4('@@config_fqdn@@')
 server.debug = 4
 server.starttls()
 server.login(user, password)

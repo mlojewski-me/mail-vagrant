@@ -5,8 +5,6 @@ This lets you easily test your application code against a real sandboxed Mail Se
 It uses the following software stack:
 
 * [Postfix](http://www.postfix.org/) to the handle mail storage, reception, and transmission using the [Simple Mail Transfer Protocol (SMTP)](https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol).
-  * Also show how to configure Postfix in Satellite mode to relay emails to the Postfix server.
-  * Also show how to configure nullmailer to relay emails to the Postfix server.
 * [Dovecot](http://www.dovecot.org/) to access the mail storage using the [Internet Message Access Protocol (IMAP)](https://en.wikipedia.org/wiki/Internet_Message_Access_Protocol).
 * Dovecot for providing User Authentication to Postfix ([SMTP AUTH](https://en.wikipedia.org/wiki/SMTP_Authentication)) through the [Simple Authentication and Security Layer (SASL)](https://en.wikipedia.org/wiki/Simple_Authentication_and_Security_Layer).
 * [Dnsmasq](http://thekelleys.org.uk/dnsmasq/doc.html) to handle the internal [Domain Name System (DNS)](https://en.wikipedia.org/wiki/Domain_Name_System).
@@ -14,29 +12,24 @@ It uses the following software stack:
 
 # Usage
 
-Build and install the [Ubuntu Base Box](https://github.com/rgl/ubuntu-vagrant).
+Run `vagrant up` to configure the `vagrant.mail.vagrant` mail server environment.
 
-Run `vagrant up mail` to configure the `mail.example.com` mail server environment.
+Configure your system `/etc/hosts` file with the `mail.vagrant` domain:
 
-Run `vagrant up satellite` to configure the `satellite.example.com` environment in Postfix Satellite mode that relays all mails to the mail server environment.
+    192.168.33.254 mail.vagrant
 
-Configure your system `/etc/hosts` file with the `example.com` and `mail.example.com` domains:
+Access http://mail.vagrant and follow the instructions to configure your Mail Client with a pre-configured account (all use the `password` password):
 
-    192.168.33.254 example.com
-    192.168.33.254 mail.example.com
+    alice@mail.vagrant
+    bob@mail.vagrant
+    carol@mail.vagrant
+    dave@mail.vagrant
+    eve@mail.vagrant
+    frank@mail.vagrant
+    grace@mail.vagrant
+    henry@mail.vagrant
 
-Access http://mail.example.com and follow the instructions to configure your Mail Client with a pre-configured account (all use the `password` password):
-
-    alice@example.com
-    bob@example.com
-    carol@example.com
-    dave@example.com
-    eve@example.com
-    frank@example.com
-    grace@example.com
-    henry@example.com
-
-This also has some pre-configured aliases to `alice@example.com`:
+This also has some pre-configured aliases to `alice@mail.vagrant`:
 
     root
     abuse
@@ -44,6 +37,6 @@ This also has some pre-configured aliases to `alice@example.com`:
     hostmaster
     mailer-daemon
 
-At http://mail.example.com/examples you have some examples on how to programmatically use the mail server (e.g. from Python).
+At http://mail.vagrant/examples you have some examples on how to programmatically use the mail server (e.g. from Python).
 
 To troubleshoot, watch the Mail Server logs with `vagrant ssh` and `journalctl --follow`.
